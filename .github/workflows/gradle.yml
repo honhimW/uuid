@@ -24,11 +24,6 @@ jobs:
           use-cross: true
           command: build
           args: --release --manifest-path bindings/java/Cargo.toml
-      - name: list files
-        if: matrix.os == 'ubuntu-22.04'
-        run: |
-          ls ./target
-          ls ./target/x86_64-unknown-linux-gnu/release
       - name: rust-toolchain
         if: matrix.os == 'ubuntu-22.04'
         uses: dtolnay/rust-toolchain@v1
@@ -42,12 +37,6 @@ jobs:
           use-cross: true
           command: build
           args: --target aarch64-unknown-linux-gnu --release --manifest-path bindings/java/Cargo.toml
-      - name: list files
-        if: matrix.os == 'ubuntu-22.04'
-        run: |
-          ls ./target
-          ls ./target/x86_64-unknown-linux-gnu
-          ls ./target/aarch64-unknown-linux-gnu
       - name: Cargo Cross
         if: matrix.os == 'windows-latest'
         run: |
@@ -58,7 +47,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: uuid_java-x86_64-unknown-linux-gnu
-          path: ./target/x86_64-unknown-linux-gnu/release/uuid_java.so
+          path: ./target/x86_64-unknown-linux-gnu/release/libuuid_java.so
           compression-level: 9
           retention-days: 1
       
@@ -67,7 +56,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: uuid_java-aarch64-unknown-linux-gnu
-          path: ./target/aarch64-unknown-linux-gnu/release/uuid_java.so
+          path: ./target/aarch64-unknown-linux-gnu/release/libuuid_java.so
           compression-level: 9
           retention-days: 1
 
