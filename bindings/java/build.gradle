@@ -73,8 +73,15 @@ tasks.register('copyNativeLib', Copy) {
     into sourceSets.main.output.resourcesDir
 }
 
+tasks.register('copyPreBuildLibs', Copy) {
+    from("${projectDir}/../../target/artifacts/") {
+        include "**/*.dll", "**/*.so", "**/*.dylib"
+    }
+    into sourceSets.main.output.resourcesDir
+}
+
 jar {
-    dependsOn 'copyNativeLib'
+    dependsOn System.getenv('USE_PREBUILT_LIBS') != null ? 'copyPreBuildLibs' : 'copyNativeLib'
 }
 
 clean {
