@@ -17,7 +17,7 @@ jobs:
       matrix:
         os: [ubuntu-22.04, windows-latest, macos-latest, macos-13]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/Checkout@v5
       - name: Cargo
         uses: actions-rs/cargo@v1
         with:
@@ -34,16 +34,12 @@ jobs:
         if: matrix.os == 'ubuntu-22.04'
         uses: actions-rs/cargo@v1
         with:
-            use-cross: true
-            command: build
-            args: --target aarch64-unknown-linux-gnu --release
+          use-cross: true
+          command: build
+          args: --target aarch64-unknown-linux-gnu --release
       - name: Cargo Cross
         if: matrix.os == 'windows-latest'
-        uses: actions-rs/cargo@v1
-        with:
-            use-cross: true
-            command: build
-            args: --target aarch64-pc-windows-msvc --release
+        run: cargo build --target aarch64-pc-windows-msvc --release
       - name: Upload Linux AMD64
         if: matrix.os == 'ubuntu-22.04'
         uses: actions/upload-artifact@v4
