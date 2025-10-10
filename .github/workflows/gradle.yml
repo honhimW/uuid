@@ -46,7 +46,7 @@ jobs:
             args: --target aarch64-pc-windows-msvc --release
       - name: Upload Linux AMD64
         if: matrix.os == 'ubuntu-22.04'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: uuid_java-x86_64-unknown-linux-gnu
           path: ./target/release/uuid_java.so
@@ -55,7 +55,7 @@ jobs:
       
       - name: Upload Linux AARCH64
         if: matrix.os == 'ubuntu-22.04'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: uuid_java-aarch64-unknown-linux-gnu
           path: ./target/aarch64-unknown-linux-gnu/release/uuid_java.so
@@ -64,7 +64,7 @@ jobs:
 
       - name: Upload Windows AMD64
         if: matrix.os == 'windows-latest'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: uuid_java-x86_64-pc-windows-msvc
           path: ./target/release/uuid_java.dll
@@ -73,7 +73,7 @@ jobs:
       
       - name: Upload Windows AARCH64
         if: matrix.os == 'windows-latest'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: uuid_java-aarch64-pc-windows-msvc
           path: ./target/aarch64-pc-windows-msvc/release/uuid_java.dll
@@ -82,7 +82,7 @@ jobs:
 
       - name: Upload Macos AARCH64
         if: matrix.os == 'macos-latest'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: uuid_java-aarch64-apple-darwin
           path: ./target/release/uuid_java.dylib
@@ -91,7 +91,7 @@ jobs:
       
       - name: Upload Macos AMD64
         if: matrix.os == 'macos-13'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: uuid_java-x86_64-apple-darwin
           path: ./target/release/uuid_java.dylib
