@@ -25,7 +25,9 @@ jobs:
           command: build
           args: --release --manifest-path bindings/java/Cargo.toml
       - name: list files
-        run: ls ./target/release
+        run: |
+          ls ./target/release
+          ls ./target
       - name: rust-toolchain
         if: matrix.os == 'ubuntu-22.04'
         uses: dtolnay/rust-toolchain@v1
@@ -33,7 +35,9 @@ jobs:
           toolchain: stable
           target: aarch64-unknown-linux-gnu
       - name: list files
-        run: ls ./target/release
+        run: |
+          ls ./target/release
+          ls ./target
       - name: Cargo Cross
         if: matrix.os == 'ubuntu-22.04'
         uses: actions-rs/cargo@v1
