@@ -30,6 +30,11 @@ jobs:
         with:
           toolchain: stable
           target: aarch64-unknown-linux-gnu
+      - name: list files
+        if: matrix.os == 'ubuntu-22.04'
+        run: |
+          ls ./target/release
+          ls ./target/x86_64-unknown-linux-gnu
       - name: Cargo Cross
         if: matrix.os == 'ubuntu-22.04'
         uses: actions-rs/cargo@v1
