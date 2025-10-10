@@ -21,7 +21,6 @@ jobs:
       - name: Cargo
         uses: actions-rs/cargo@v1
         with:
-            use-cross: true
             command: build
             args: --release
       - name: rust-toolchain
@@ -34,7 +33,6 @@ jobs:
         if: matrix.os == 'ubuntu-22.04'
         uses: actions-rs/cargo@v1
         with:
-          use-cross: true
           command: build
           args: --target aarch64-unknown-linux-gnu --release
       - name: Cargo Cross
