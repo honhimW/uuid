@@ -24,20 +24,12 @@ jobs:
           use-cross: true
           command: build
           args: --release --manifest-path bindings/java/Cargo.toml
-      - name: list files
-        run: |
-          ls ./target/release
-          ls ./target
       - name: rust-toolchain
         if: matrix.os == 'ubuntu-22.04'
         uses: dtolnay/rust-toolchain@v1
         with:
           toolchain: stable
           target: aarch64-unknown-linux-gnu
-      - name: list files
-        run: |
-          ls ./target/release
-          ls ./target
       - name: Cargo Cross
         if: matrix.os == 'ubuntu-22.04'
         uses: actions-rs/cargo@v1
@@ -45,6 +37,11 @@ jobs:
           use-cross: true
           command: build
           args: --target aarch64-unknown-linux-gnu --release --manifest-path bindings/java/Cargo.toml
+      - name: list files
+        run: |
+          ls ./target/release
+          ls ./target/x86_64-unknown-linux-gnu
+          ls ./target/aarch64-unknown-linux-gnu
       - name: Cargo Cross
         if: matrix.os == 'windows-latest'
         run: |
@@ -55,7 +52,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: uuid_java-x86_64-unknown-linux-gnu
-          path: ./target/release/uuid_java.so
+          path: ./target/x86_64-unknown-linux-gnu/release/uuid_java.so
           compression-level: 9
           retention-days: 1
       
@@ -91,7 +88,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: uuid_java-aarch64-apple-darwin
-          path: ./target/release/uuid_java.dylib
+          path: ./target/release/libuuid_java.dylib
           compression-level: 9
           retention-days: 1
       
@@ -100,7 +97,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: uuid_java-x86_64-apple-darwin
-          path: ./target/release/uuid_java.dylib
+          path: ./target/release/libuuid_java.dylib
           compression-level: 9
           retention-days: 1
   
