@@ -27,16 +27,16 @@ public class LoadHelper {
             Platform platform = Platform.getPlatform(System.getProperty("os.name"));
             Arch arch = Arch.getArch(System.getProperty("os.arch"));
             if (platform == null || arch == null) {
-                throw new RuntimeException("Unsupported OS: " + System.getProperty("os.name") + ", ARCH: " + System.getProperty("os.arch"));
+                throw new IllegalStateException("Unsupported OS: " + System.getProperty("os.name") + ", ARCH: " + System.getProperty("os.arch"));
             }
             Target target = Target.getTarget(platform, arch);
             if (target == null) {
-                throw new RuntimeException("Unsupported OS: " + System.getProperty("os.name") + ", TARGET: " + System.getProperty("os.arch"));
+                throw new IllegalStateException("Unsupported OS: " + System.getProperty("os.name") + ", TARGET: " + System.getProperty("os.arch"));
             }
             String libName = "/" + name + "-" + target.target + platform.suffix;
             InputStream in = LoadHelper.class.getResourceAsStream(libName);
             if (in == null) {
-                throw new RuntimeException("Library not found: " + libName);
+                throw new IllegalStateException("Library not found: " + libName);
             }
             File tempFile = File.createTempFile("rs_ffi_", platform.suffix);
             tempFile.deleteOnExit();
@@ -49,6 +49,8 @@ public class LoadHelper {
             fileOutputStream.close();
             in.close();
             System.load(tempFile.getAbsolutePath());
+        } catch (IllegalStateException e) {
+            throw e;
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
