@@ -81,7 +81,7 @@ tasks.register('cargoCheck', Exec) {
 
 tasks.register('copyPreBuildLibs', Copy) {
     dependsOn 'cargoCheck'
-    from("${projectDir}/../../target/artifacts/") {
+    from("${projectDir}/../../artifacts/") {
         include "**/*.dll", "**/*.so", "**/*.dylib"
     }
     into sourceSets.main.output.resourcesDir
