@@ -1,3 +1,5 @@
+import static java.nio.charset.StandardCharsets.UTF_8
+
 plugins {
     id 'java'
     id 'signing'
@@ -14,6 +16,20 @@ repositories {
     mavenCentral()
 }
 
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+tasks.withType(JavaCompile).configureEach {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+    options.encoding = UTF_8.name()
+    inputs.files(tasks.withType(ProcessResources))
+//    options.compilerArgs << "-Xlint:deprecation"
+    options.compilerArgs << "-Werror" << "-Xlint:deprecation" << "-Xlint:unchecked"
+}
+
 dependencies {
     compileOnly libs.jspecify
 
@@ -28,15 +44,10 @@ dependencies {
 
 tasks.register('buildRust', Exec) {
     def target = System.getenv('BUILD_TARGET')
-    if (target != null && !target.isEmpty()) {
+    if (target != null) {
         commandLine 'cargo', 'build', '--release', '--target', target
     } else {
-        commandLine 'cargo', 'build', '--release', '--target', 'x86_64-unknown-linux-gnu'
-        commandLine 'cargo', 'build', '--release', '--target', 'aarch64-unknown-linux-gnu'
-        commandLine 'cargo', 'build', '--release', '--target', 'x86_64-pc-windows-msvc'
-        commandLine 'cargo', 'build', '--release', '--target', 'aarch64-pc-windows-msvc'
-        commandLine 'cargo', 'build', '--release', '--target', 'aarch64-apple-darwin'
-        commandLine 'cargo', 'build', '--release', '--target', 'x86_64-apple-darwin'
+        commandLine 'cargo', 'build', '--release'
     }
     workingDir "${projectDir}"
     environment CARGO_TERM_COLOR: 'always'
@@ -50,27 +61,29 @@ tasks.register('cleanRust', Exec) {
 
 tasks.register('copyNativeLib', Copy) {
     dependsOn 'buildRust'
-    def targets = [
-            'x86_64-unknown-linux-gnu',
-            'aarch64-unknown-linux-gnu',
-            'x86_64-pc-windows-msvc',
-            'aarch64-pc-windows-msvc',
-            'aarch64-apple-darwin',
-            'x86_64-apple-darwin'
-    ]
+    doLast {
+        def targets = [
+                'x86_64-unknown-linux-gnu',
+                'aarch64-unknown-linux-gnu',
+                'x86_64-pc-windows-msvc',
+                'aarch64-pc-windows-msvc',
+                'aarch64-apple-darwin',
+                'x86_64-apple-darwin'
+        ]
 
-    targets.each { target ->
-        from("${projectDir}/../../target/${target}/release") {
-            include "*.dll", "*.so", "*.dylib"
+        targets.each { target ->
+            from("${projectDir}/../../target/${target}/release") {
+                include "*.dll", "*.so", "*.dylib"
 
-            eachFile { fileCopyDetails ->
-                def ext = fileCopyDetails.name.substring(fileCopyDetails.name.lastIndexOf('.') + 1)
-                def base = fileCopyDetails.name.substring(0, fileCopyDetails.name.lastIndexOf('.'))
-                fileCopyDetails.name = "${base}-${target}.${ext}"
+                eachFile { fileCopyDetails ->
+                    def ext = fileCopyDetails.name.substring(fileCopyDetails.name.lastIndexOf('.') + 1)
+                    def base = fileCopyDetails.name.substring(0, fileCopyDetails.name.lastIndexOf('.'))
+                    fileCopyDetails.name = "${base}-${target}.${ext}"
+                }
             }
+            into sourceSets.main.output.resourcesDir
         }
     }
-    into sourceSets.main.output.resourcesDir
 }
 
 tasks.register('cargoCheck', Exec) {
@@ -81,17 +94,19 @@ tasks.register('cargoCheck', Exec) {
 
 tasks.register('copyPreBuildLibs', Copy) {
     dependsOn 'cargoCheck'
-    def dirs = [
-            'linux',
-            'windows',
-            'macos',
-            'macos-intel',
-    ]
-    dirs.each { dir ->
-        from("${projectDir}/../../artifacts/${dir}") {
-            include "*.dll", "*.so", "*.dylib"
+    doLast {
+        def dirs = [
+                'linux',
+                'windows',
+                'macos',
+                'macos-intel',
+        ]
+        dirs.each { dir ->
+            from("${projectDir}/../../artifacts/${dir}") {
+                include "*.dll", "*.so", "*.dylib"
+            }
+            into sourceSets.main.output.resourcesDir
         }
-        into sourceSets.main.output.resourcesDir
     }
 }
 

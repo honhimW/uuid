@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  cargo-build:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -98,9 +98,8 @@ jobs:
           compression-level: 9
           retention-days: 1
   
-
-  collect:
-    needs: build
+  gradle-build:
+    needs: cargo-build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/Checkout@v5

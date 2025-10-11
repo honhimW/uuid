@@ -125,36 +125,30 @@ public class LoadHelper {
         @Nullable
         public static Target getTarget(Platform platform, Arch arch) {
             switch (platform) {
-                case LINUX -> {
+                case LINUX:
                     switch (arch) {
-                        case AMD64 -> {
+                        case AMD64:
                             return LINUX_X86_64;
-                        }
-                        case AARCH64 -> {
+                        case AARCH64:
                             return LINUX_AARCH64;
-                        }
                     }
-                }
-                case WINDOWS -> {
+                    break;
+                case WINDOWS:
                     switch (arch) {
-                        case AMD64 -> {
+                        case AMD64:
                             return WINDOWS_X86_64;
-                        }
-                        case AARCH64 -> {
+                        case AARCH64:
                             return WINDOWS_AARCH64;
-                        }
                     }
-                }
-                case MACOS -> {
+                    break;
+                case MACOS:
                     switch (arch) {
-                        case AARCH64 -> {
+                        case AARCH64:
                             return MACOS_AARCH64;
-                        }
-                        case AMD64 -> {
+                        case AMD64:
                             return MACOS_X86_64;
-                        }
                     }
-                }
+                    break;
             }
             return null;
         }
