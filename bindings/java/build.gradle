@@ -4,6 +4,7 @@ plugins {
     id 'java'
     id 'signing'
     alias libs.plugins.publish
+    alias libs.plugins.osdetector
 }
 
 group = 'io.github.honhimw'
@@ -25,8 +26,7 @@ tasks.withType(JavaCompile).configureEach {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
     options.encoding = UTF_8.name()
-    inputs.files(tasks.withType(ProcessResources))
-//    options.compilerArgs << "-Xlint:deprecation"
+//    inputs.files(tasks.withType(ProcessResources))
     options.compilerArgs << "-Werror" << "-Xlint:deprecation" << "-Xlint:unchecked"
 }
 
@@ -43,12 +43,7 @@ dependencies {
 }
 
 tasks.register('buildRust', Exec) {
-    def target = System.getenv('BUILD_TARGET')
-    if (target != null) {
-        commandLine 'cargo', 'build', '--release', '--target', target
-    } else {
-        commandLine 'cargo', 'build', '--release'
-    }
+    commandLine 'cargo', 'build', '--release', '--target', currentTarget()
     workingDir "${projectDir}"
     environment CARGO_TERM_COLOR: 'always'
 }
@@ -61,29 +56,18 @@ tasks.register('cleanRust', Exec) {
 
 tasks.register('copyNativeLib', Copy) {
     dependsOn 'buildRust'
-    doLast {
-        def targets = [
-                'x86_64-unknown-linux-gnu',
-                'aarch64-unknown-linux-gnu',
-                'x86_64-pc-windows-msvc',
-                'aarch64-pc-windows-msvc',
-                'aarch64-apple-darwin',
-                'x86_64-apple-darwin'
-        ]
+    def target = currentTarget()
+    from("${projectDir}/../../target/${target}/release") {
+        include "*.dll", "*.so", "*.dylib"
 
-        targets.each { target ->
-            from("${projectDir}/../../target/${target}/release") {
-                include "*.dll", "*.so", "*.dylib"
-
-                eachFile { fileCopyDetails ->
-                    def ext = fileCopyDetails.name.substring(fileCopyDetails.name.lastIndexOf('.') + 1)
-                    def base = fileCopyDetails.name.substring(0, fileCopyDetails.name.lastIndexOf('.'))
-                    fileCopyDetails.name = "${base}-${target}.${ext}"
-                }
-            }
-            into sourceSets.main.output.resourcesDir
+        eachFile { fileCopyDetails ->
+            def ext = fileCopyDetails.name.substring(fileCopyDetails.name.lastIndexOf('.') + 1)
+            def base = fileCopyDetails.name.substring(0, fileCopyDetails.name.lastIndexOf('.'))
+            fileCopyDetails.name = "${base}-${target}.${ext}"
         }
     }
+    into sourceSets.main.output.resourcesDir
+    finalizedBy 'build'
 }
 
 tasks.register('cargoCheck', Exec) {
@@ -110,10 +94,61 @@ tasks.register('copyPreBuildLibs', Copy) {
     }
 }
 
+javadoc.dependsOn('copyNativeLib')
+compileTestJava.dependsOn('copyNativeLib')
+
 jar {
-    dependsOn System.getenv('USE_PREBUILT_LIBS') != null ? 'copyPreBuildLibs' : 'copyNativeLib'
     enabled true
+    if (System.getenv('USE_PREBUILT_LIBS') != null) {
+        dependsOn 'copyPreBuildLibs'
+    } else {
+        dependsOn 'copyNativeLib'
+//        archiveClassifier = osdetector.classifier
+    }
 }
+
+tasks.register('linux_x86_64', Jar) {
+    archiveClassifier = 'linux-x86_64'
+    from(sourceSets.main.output) {
+        exclude '*.dll', '*.dylib', '*aarch64*.so'
+    }
+}
+
+tasks.register('linux_aarch64', Jar) {
+    archiveClassifier = 'linux-aarch_64'
+    from(sourceSets.main.output) {
+        exclude '*.dll', '*.dylib', '*x86_64*.so'
+    }
+}
+
+tasks.register('windows_x86_64', Jar) {
+    archiveClassifier = 'windows-x86_64'
+    from(sourceSets.main.output) {
+        exclude '*.so', '*.dylib', '*aarch64*.dll'
+    }
+}
+
+tasks.register('windows_aarch64', Jar) {
+    archiveClassifier = 'windows-aarch_64'
+    from(sourceSets.main.output) {
+        exclude '*.so', '*.dylib', '*x86_64*.dll'
+    }
+}
+
+tasks.register('macos_aarch64', Jar) {
+    archiveClassifier = 'osx-aarch_64'
+    from(sourceSets.main.output) {
+        exclude '*.so', '*.dll', '*x86_64*.dylib'
+    }
+}
+
+tasks.register('macos_x86_64', Jar) {
+    archiveClassifier = 'osx-x86_64'
+    from(sourceSets.main.output) {
+        exclude '*.so', '*.dll', '*aarch64*.dylib'
+    }
+}
+
 
 clean {
     dependsOn 'cleanRust'
@@ -155,4 +190,27 @@ mavenPublishing {
         }
     }
 
+}
+
+String currentTarget() {
+    if (osdetector.os == 'linux') {
+        if (osdetector.arch == 'aarch_64') {
+            return 'aarch64-unknown-linux-gnu'
+        } else {
+            return 'x86_64-unknown-linux-gnu'
+        }
+    } else if (osdetector.os == 'windows') {
+        if (osdetector.arch == 'aarch64') {
+            return 'aarch64-pc-windows-msvc'
+        } else {
+            return 'x86_64-pc-windows-msvc'
+        }
+    } else if (osdetector.os == 'macos') {
+        if (osdetector.arch == 'aarch64') {
+            return 'aarch64-apple-darwin'
+        } else {
+            return 'x86_64-apple-darwin'
+        }
+    }
+    return ''
 }

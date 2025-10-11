@@ -120,10 +120,21 @@ jobs:
         uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
 
       - name: Gradle build
-        run: bash bindings/java/gradlew --project-dir bindings/java build -x test
+        run: |
+          bash bindings/java/gradlew --project-dir bindings/java build -x test
+          bash bindings/java/gradlew --project-dir bindings/java linux_x86_64
+          bash bindings/java/gradlew --project-dir bindings/java linux_aarch64
+          bash bindings/java/gradlew --project-dir bindings/java windows_x86_64
+          bash bindings/java/gradlew --project-dir bindings/java windows_aarch64
+          bash bindings/java/gradlew --project-dir bindings/java macos_aarch64
+          bash bindings/java/gradlew --project-dir bindings/java macos_x86_64
         env:
           USE_PREBUILT_LIBS: true
       - name: List resources
-        run: ls -lah ./bindings/java/build/resources/main
+        run: |
+          echo 'ls -lah ./bindings/java/build/resources/main'
+          ls -lah ./bindings/java/build/resources/main
+          echo 'ls -lah ./bindings/java/build/libs'
+          ls -lah ./bindings/java/build/libs
       - name: Gradle test
         run: bash bindings/java/gradlew --project-dir bindings/java test

@@ -3,6 +3,7 @@ version = "0.0.1"
 jspecify = "1.0.0"
 junit = "5.13.4"
 central-publish = "0.34.0"
+osdetector = "1.7.3"
 jmh = "1.37"
 
 [libraries.jspecify]
@@ -24,3 +25,7 @@ version.ref = "jmh"
 [plugins.publish]
 id = "com.vanniktech.maven.publish"
 version.ref = "central-publish"
+
+[plugins.osdetector]
+id = "com.google.osdetector"
+version.ref = "osdetector"
