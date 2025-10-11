@@ -73,19 +73,19 @@ tasks.register('copyNativeLib', Copy) {
     into sourceSets.main.output.resourcesDir
 }
 
-tasks.register('copyPreBuildLibs', ProcessResources) {
+tasks.register('cargoCheck', Exec) {
+    commandLine 'cargo', 'check'
+    workingDir "${projectDir}"
+    environment CARGO_TERM_COLOR: 'always'
+}
+
+tasks.register('copyPreBuildLibs', Copy) {
+    dependsOn 'cargoCheck'
     from("${projectDir}/../../target/artifacts/") {
         include "**/*.dll", "**/*.so", "**/*.dylib"
     }
     into sourceSets.main.output.resourcesDir
 }
-
-//tasks.register('copyPreBuildLibs', Copy) {
-//    from("${projectDir}/../../target/artifacts/") {
-//        include "**/*.dll", "**/*.so", "**/*.dylib"
-//    }
-//    into sourceSets.main.output.resourcesDir
-//}
 
 jar {
     dependsOn System.getenv('USE_PREBUILT_LIBS') != null ? 'copyPreBuildLibs' : 'copyNativeLib'

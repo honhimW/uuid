@@ -109,7 +109,9 @@ jobs:
         with:
           path: ./artifacts
       - name: Move Artifacts
-        run: mv ./artifacts ./target/
+        run: |
+          mv ./artifacts ./target/
+          ls -R ./target/artifacts
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -122,10 +124,11 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
 
-      - name: Build with Gradle Wrapper
-        run: bash bindings/java/gradlew --project-dir bindings/java build
+      - name: Gradle build
+        run: bash bindings/java/gradlew --project-dir bindings/java build -x test
         env:
           USE_PREBUILT_LIBS: true
-
+      - name: Gradle test
+        run: bash bindings/java/gradlew --project-dir bindings/java test
       - name: List resources
         run: ls -lah ./bindings/java/build/resources/main
