@@ -78,19 +78,17 @@ tasks.register('cargoCheck', Exec) {
 
 tasks.register('copyPreBuildLibs', Copy) {
     dependsOn 'cargoCheck'
-    doLast {
-        def dirs = [
-                'linux',
-                'windows',
-                'macos',
-                'macos-intel',
-        ]
-        dirs.each { dir ->
-            from("${projectDir}/../../artifacts/${dir}") {
-                include "*.dll", "*.so", "*.dylib"
-            }
-            into sourceSets.main.output.resourcesDir
+    def dirs = [
+            'linux',
+            'windows',
+            'macos',
+            'macos-intel',
+    ]
+    dirs.each { dir ->
+        from("${projectDir}/../../artifacts/${dir}") {
+            include "*.dll", "*.so", "*.dylib"
         }
+        into sourceSets.main.output.resourcesDir
     }
 }
 
