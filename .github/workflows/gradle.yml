@@ -124,7 +124,7 @@ jobs:
         run: bash bindings/java/gradlew --project-dir bindings/java build -x test
         env:
           USE_PREBUILT_LIBS: true
-      - name: Gradle test
-        run: bash bindings/java/gradlew --project-dir bindings/java test
       - name: List resources
         run: ls -lah ./bindings/java/build/resources/main
+      - name: Gradle test
+        run: bash bindings/java/gradlew --project-dir bindings/java test
