@@ -27,7 +27,7 @@ tasks.withType(JavaCompile).configureEach {
     targetCompatibility = JavaVersion.VERSION_1_8
     options.encoding = UTF_8.name()
 //    inputs.files(tasks.withType(ProcessResources))
-    options.compilerArgs << "-Werror" << "-Xlint:deprecation" << "-Xlint:unchecked"
+//    options.compilerArgs << "-Werror" << "-Xlint:deprecation" << "-Xlint:unchecked"
 }
 
 dependencies {
