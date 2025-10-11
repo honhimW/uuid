@@ -73,7 +73,9 @@ public class LoadHelper {
         public static Platform getPlatform(String os) {
             String osName = os.toLowerCase();
             for (Platform value : values()) {
-                return osName.contains(value.name) ? value : null;
+                if (osName.contains(value.name)) {
+                    return value;
+                }
             }
             return null;
         }
