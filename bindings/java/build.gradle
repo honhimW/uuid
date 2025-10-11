@@ -73,15 +73,23 @@ tasks.register('copyNativeLib', Copy) {
     into sourceSets.main.output.resourcesDir
 }
 
-tasks.register('copyPreBuildLibs', Copy) {
+tasks.register('copyPreBuildLibs', ProcessResources) {
     from("${projectDir}/../../target/artifacts/") {
         include "**/*.dll", "**/*.so", "**/*.dylib"
     }
     into sourceSets.main.output.resourcesDir
 }
 
+//tasks.register('copyPreBuildLibs', Copy) {
+//    from("${projectDir}/../../target/artifacts/") {
+//        include "**/*.dll", "**/*.so", "**/*.dylib"
+//    }
+//    into sourceSets.main.output.resourcesDir
+//}
+
 jar {
     dependsOn System.getenv('USE_PREBUILT_LIBS') != null ? 'copyPreBuildLibs' : 'copyNativeLib'
+    enabled true
 }
 
 clean {
@@ -124,8 +132,4 @@ mavenPublishing {
         }
     }
 
-}
-
-jar {
-    enabled(true)
 }
