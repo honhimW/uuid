@@ -99,7 +99,7 @@ compileTestJava.dependsOn('copyNativeLib')
 
 jar {
     enabled true
-    dependsOn 'copyPreBuildLibs', 'copyNativeLib
+    dependsOn 'copyPreBuildLibs', 'copyNativeLib'
     // if (System.getenv('USE_PREBUILT_LIBS') != null) {
     //     dependsOn 'copyPreBuildLibs'
     // } else {
