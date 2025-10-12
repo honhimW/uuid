@@ -94,8 +94,8 @@ tasks.register('copyPreBuildLibs', Copy) {
     }
 }
 
-javadoc.dependsOn('copyNativeLib')
-compileTestJava.dependsOn('copyNativeLib')
+javadoc.dependsOn('copyPreBuildLibs', 'copyNativeLib')
+compileTestJava.dependsOn('copyPreBuildLibs', 'copyNativeLib')
 
 jar {
     enabled true
