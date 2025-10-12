@@ -141,6 +141,11 @@ jobs:
 
       - name: Publishing
         run: |
+          echo ${#ORG_GRADLE_PROJECT_mavenCentralUsername}
+          echo ${#ORG_GRADLE_PROJECT_mavenCentralPassword}
+          echo ${#ORG_GRADLE_PROJECT_signingInMemoryKeyId}
+          echo ${#ORG_GRADLE_PROJECT_signingInMemoryKeyPassword}
+          echo ${#ORG_GRADLE_PROJECT_signingInMemoryKey}
           bash bindings/java/gradlew --project-dir bindings/java publishAllPublicationsToMavenCentralRepository
         env:
           ORG_GRADLE_PROJECT_mavenCentralUsername: "{{ secrets.MAVEN_CENTRAL_USERNAME }}"
