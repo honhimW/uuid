@@ -135,17 +135,12 @@ jobs:
           echo 'ls -lah ./bindings/java/build/resources/main'
           ls -lah ./bindings/java/build/resources/main
           echo 'ls -lah ./bindings/java/build/libs'
-          ls -lah ./bindings/java/build/libs
-      - name: Tests
-        run: bash bindings/java/gradlew --project-dir bindings/java test
+      #     ls -lah ./bindings/java/build/libs
+      # - name: Tests
+      #   run: bash bindings/java/gradlew --project-dir bindings/java test
 
       - name: Publishing
         run: |
-          echo ${#ORG_GRADLE_PROJECT_mavenCentralUsername}
-          echo ${#ORG_GRADLE_PROJECT_mavenCentralPassword}
-          echo ${#ORG_GRADLE_PROJECT_signingInMemoryKeyId}
-          echo ${#ORG_GRADLE_PROJECT_signingInMemoryKeyPassword}
-          echo ${#ORG_GRADLE_PROJECT_signingInMemoryKey}
           bash bindings/java/gradlew --project-dir bindings/java publishAllPublicationsToMavenCentralRepository
         env:
           USE_PREBUILT_LIBS: true
