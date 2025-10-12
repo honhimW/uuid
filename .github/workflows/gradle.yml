@@ -148,6 +148,7 @@ jobs:
           echo ${#ORG_GRADLE_PROJECT_signingInMemoryKey}
           bash bindings/java/gradlew --project-dir bindings/java publishAllPublicationsToMavenCentralRepository
         env:
+          USE_PREBUILT_LIBS: true
           ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
           ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
           ORG_GRADLE_PROJECT_signingInMemoryKeyId: ${{ secrets.SIGNING_KEY_ID }}
