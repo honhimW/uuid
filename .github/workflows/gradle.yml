@@ -166,7 +166,7 @@ jobs:
           curl -X POST "https://central.sonatype.com/api/v1/publisher/upload" \
             -u "$MAVEN_CENTRAL_USERNAME:$MAVEN_CENTRAL_PASSWORD" \
             -H 'Content-Type: multipart/form-data' \
-            -F "file=@artifacts.zip"
+            -F "bundle=@artifacts.zip;type=application/x-zip-compressed"
         env:
           MAVEN_CENTRAL_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
           MAVEN_CENTRAL_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
