@@ -64,6 +64,9 @@ tasks.register('copyNativeLib', Copy) {
         eachFile { fileCopyDetails ->
             def ext = fileCopyDetails.name.substring(fileCopyDetails.name.lastIndexOf('.') + 1)
             def base = fileCopyDetails.name.substring(0, fileCopyDetails.name.lastIndexOf('.'))
+            if (base.startsWith("lib")) {
+                base = base.substring(3)
+            }
             fileCopyDetails.name = "${base}-${target}.${ext}"
         }
     }
@@ -104,7 +107,6 @@ jar {
     //     dependsOn 'copyPreBuildLibs'
     // } else {
     //     dependsOn 'copyNativeLib'
-//        archiveClassifier = osdetector.classifier
     // }
 }
 
