@@ -161,7 +161,8 @@ jobs:
       - name: Publishing
         run: |
           export ARTIFACT_NAME="$(find . -maxdepth 1 -type f -regex './uuid-[0-9]+\.[0-9]+\.[0-9]+\.jar' | head -n1 | sed -E 's|.*/||; s|\.jar$||')"
-          zip -r artifacts.zip ./workspace/*
+          cd workspace
+          zip -r artifacts.zip ./*
           curl -X POST "https://central.sonatype.com/api/v1/publisher/upload?name=${ARTIFACT_NAME}&publishingType=USER_MANAGED" \
             -u "$MAVEN_CENTRAL_USERNAME:$MAVEN_CENTRAL_PASSWORD" \
             -H 'Content-Type: multipart/form-data' \
