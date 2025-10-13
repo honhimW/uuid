@@ -132,13 +132,13 @@ jobs:
           bash bindings/java/gradlew --project-dir bindings/java generatePomFileForMavenPublication
         env:
           USE_PREBUILT_LIBS: true
-      - name: Upload bundles
-        uses: actions/upload-artifact@v4
-        with:
-          name: jars
-          path: ./bindings/java/build/libs/*
-          compression-level: 9
-          retention-days: 1
+#      - name: Upload bundles
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: jars
+#          path: ./bindings/java/build/libs/*
+#          compression-level: 9
+#          retention-days: 1
       - name: Signing
         run: |
           mkdir workspace
