@@ -128,14 +128,10 @@ jobs:
           bash bindings/java/gradlew --project-dir bindings/java windows_aarch64
           bash bindings/java/gradlew --project-dir bindings/java macos_aarch64
           bash bindings/java/gradlew --project-dir bindings/java macos_x86_64
+          bash bindings/java/gradlew --project-dir bindings/java plainJavadocJar
+          bash bindings/java/gradlew --project-dir bindings/java generatePomFileForMavenPublication
         env:
           USE_PREBUILT_LIBS: true
-      - name: List resources
-        run: |
-          echo 'ls -lah ./bindings/java/build/resources/main'
-          ls -lah ./bindings/java/build/resources/main
-          echo 'ls -lah ./bindings/java/build/libs'
-          ls -lah ./bindings/java/build/libs
       - name: Upload bundles
         uses: actions/upload-artifact@v4
         with:
@@ -143,6 +139,26 @@ jobs:
           path: ./bindings/java/build/libs/*
           compression-level: 9
           retention-days: 1
+      - name: Signing
+        run: |
+          mkdir workspace
+          mv ./bindings/java/build/libs/* ./workspace
+          mv ./bindings/java/build/publications/maven/pom-default.xml ./workspace/pom.xml
+          cd workspace
+          mv pom.xml "$(find . -maxdepth 1 -type f -regex './uuid-[0-9]+\.[0-9]+\.[0-9]+\.jar' | sed 's/\.jar$/.pom/' | head -n1)"
+          echo $SIGNING_IN_MEMORY_KEY | gpg --import
+          for i in *.jar *.pom; do gpg --yes --armor --detach-sign --passphrase $SIGNING_KEY_PASSWORD --pinentry-mode loopback --local-user $SIGNING_KEY_ID; echo $i; done
+          for i in *.jar *.pom; do md5sum "$i" | awk '{print $1}' > "$i.md5"; done
+          for i in *.jar *.pom; do sha1sum "$i" | awk '{print $1}' > "$i.sha1"; done
+          for i in *.jar *.pom; do sha256sum "$i" | awk '{print $1}' > "$i.sha256"; done
+          for i in *.jar *.pom; do sha512sum "$i" | awk '{print $1}' > "$i.sha512"; done
+          ls -lah
+        env:
+          MAVEN_CENTRAL_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          MAVEN_CENTRAL_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+          SIGNING_KEY_ID: ${{ secrets.SIGNING_KEY_ID }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+          SIGNING_IN_MEMORY_KEY: ${{ secrets.SIGNING_IN_MEMORY_KEY }}
 #      - name: Publishing
 #        run: |
 #          bash bindings/java/gradlew --project-dir bindings/java publishAllPublicationsToMavenCentralRepository
