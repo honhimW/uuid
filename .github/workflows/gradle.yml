@@ -141,14 +141,14 @@ jobs:
 #          retention-days: 1
       - name: Signing
         run: |
+          echo $SECRING_GPG_BASE64 | base64 --decode > secring.gpg
+          gpg --import --passphrase $SIGNING_KEY_PASSWORD --pinentry-mode loopback ./secring.gpg
           mkdir workspace
           mv ./bindings/java/build/libs/* ./workspace
           mv ./bindings/java/build/publications/maven/pom-default.xml ./workspace/pom.xml
           cd workspace
           mv pom.xml "$(find . -maxdepth 1 -type f -regex './uuid-[0-9]+\.[0-9]+\.[0-9]+\.jar' | sed 's/\.jar$/.pom/' | head -n1)"
-          echo $SECRING_GPG_BASE64 | base64 --decode > secring.gpg
-          gpg --import --passphrase $SIGNING_KEY_PASSWORD --pinentry-mode loopback ./secring.gpg
-          for i in *.jar *.pom; do gpg --yes --armor --detach-sign --passphrase $SIGNING_KEY_PASSWORD --pinentry-mode loopback --local-user $SIGNING_KEY_ID; echo $i; done
+          for i in *.jar *.pom; do gpg --yes --armor --detach-sign --passphrase $SIGNING_KEY_PASSWORD --pinentry-mode loopback --local-user $SIGNING_KEY_ID; done
           for i in *.jar *.pom; do md5sum "$i" | awk '{print $1}' > "$i.md5"; done
           for i in *.jar *.pom; do sha1sum "$i" | awk '{print $1}' > "$i.sha1"; done
           for i in *.jar *.pom; do sha256sum "$i" | awk '{print $1}' > "$i.sha256"; done
