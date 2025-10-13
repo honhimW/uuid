@@ -101,6 +101,8 @@ jobs:
   gradle-build:
     needs: cargo-build
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.gradle_build.outputs.version }}
     steps:
       - uses: actions/Checkout@v5
       - name: Download all artifacts
@@ -119,7 +121,8 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
 
-      - name: Gradle build
+      - id: gradle_build
+        name: Gradle build
         run: |
           bash bindings/java/gradlew --project-dir bindings/java build -x test
           bash bindings/java/gradlew --project-dir bindings/java linux_x86_64
@@ -130,6 +133,8 @@ jobs:
           bash bindings/java/gradlew --project-dir bindings/java macos_x86_64
           bash bindings/java/gradlew --project-dir bindings/java plainJavadocJar
           bash bindings/java/gradlew --project-dir bindings/java generatePomFileForMavenPublication
+          VERSION=$(bash bindings/java/gradlew --project-dir bindings/java properties -q | grep "^version:" | awk '{print $2}')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
         env:
           USE_PREBUILT_LIBS: true
 #      - name: Upload bundles
@@ -162,11 +167,13 @@ jobs:
         run: |
           export ARTIFACT_NAME="$(find . -maxdepth 1 -type f -regex './uuid-[0-9]+\.[0-9]+\.[0-9]+\.jar' | head -n1 | sed -E 's|.*/||; s|\.jar$||')"
           cd workspace
-          zip -j "${ARTIFACT_NAME}.zip" ./*
+          mkdir -p ./io/github/honhimw/${{ steps.get_version.outputs.version }}/
+          mv ./* ./io/github/honhimw/${{ steps.get_version.outputs.version }}/
+          zip -r artifacts.zip ./io
           curl -X POST "https://central.sonatype.com/api/v1/publisher/upload?name=${ARTIFACT_NAME}" \
             -u "$MAVEN_CENTRAL_USERNAME:$MAVEN_CENTRAL_PASSWORD" \
             -H 'Content-Type: multipart/form-data' \
-            -F "bundle=@${ARTIFACT_NAME}.zip;type=application/x-zip-compressed"
+            -F "bundle=@artifacts.zip;type=application/x-zip-compressed"
         env:
           MAVEN_CENTRAL_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
           MAVEN_CENTRAL_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
