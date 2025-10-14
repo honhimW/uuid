@@ -168,8 +168,8 @@ jobs:
           cd workspace
           export ARTIFACT_NAME="$(find . -maxdepth 1 -type f -regex './uuid-[0-9]+\.[0-9]+\.[0-9]+\.jar' | head -n1 | sed -E 's|.*/||; s|\.jar$||')"
           cd ..
-          mkdir -p ./io/github/honhimw/${{ steps.gradle_build.outputs.version }}/
-          mv ./workspace/* ./io/github/honhimw/${{ steps.gradle_build.outputs.version }}/
+          mkdir -p ./io/github/honhimw/uuid/${{ steps.gradle_build.outputs.version }}/
+          mv ./workspace/* ./io/github/honhimw/uuid/${{ steps.gradle_build.outputs.version }}/
           zip -r artifacts.zip ./io
           curl -X POST "https://central.sonatype.com/api/v1/publisher/upload?name=${ARTIFACT_NAME}" \
             -u "$MAVEN_CENTRAL_USERNAME:$MAVEN_CENTRAL_PASSWORD" \
