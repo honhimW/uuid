@@ -15,7 +15,6 @@ public class AlternativeJdk extends AbstractBenchmarks {
 
     @Override
     public void get() throws Exception {
-        UUID uuid = UUID.randomUUID();
-        uuid.toString();
+        UUID.randomUUID();
     }
 }

@@ -16,10 +16,10 @@ public abstract class AbstractBenchmarks {
     }
 
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
+    @BenchmarkMode(Mode.Throughput)
     @OutputTimeUnit(TimeUnit.MILLISECONDS)
-    @Warmup(iterations = 5, time = 2, timeUnit = TimeUnit.SECONDS)
-    @Measurement(iterations = 10, time = 100, timeUnit = TimeUnit.SECONDS)
+    @Warmup(iterations = 2, time = 1, timeUnit = TimeUnit.SECONDS)
+    @Measurement(iterations = 4, time = 1, timeUnit = TimeUnit.SECONDS)
     @Fork(1)
     public void get() throws Exception {
     }

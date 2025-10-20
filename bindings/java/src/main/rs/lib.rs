@@ -190,6 +190,7 @@ pub extern "system" fn Java_io_github_honhimw_uuid_InternalUuid_nowV7<'local>(
     uuid_to_jlong_array(&mut env, &uuid)
 }
 
+#[inline]
 fn uuid_to_jlong_array<'local>(env: &mut JNIEnv<'local>, uuid: &Uuid) -> jlongArray {
     let (m, l) = uuid.as_u64_pair();
 
